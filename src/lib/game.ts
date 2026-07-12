@@ -20,7 +20,17 @@ export interface Game {
   status: GameStatus
 }
 
-export const MAX_ROUNDS = 8
+export const ROUND_NAMES = [
+  "Dos tríos",
+  "Un trío y una escalera",
+  "Dos escaleras",
+  "Tres tríos",
+  "Dos tríos y una escalera",
+  "Un trío y dos escaleras",
+  "Tres escaleras",
+]
+
+export const MAX_ROUNDS = ROUND_NAMES.length
 export const MIN_PLAYERS = 2
 export const MAX_PLAYERS = 6
 
@@ -46,6 +56,10 @@ export function addRound(game: Game, scores: Record<string, number>): Game {
     rounds,
     status: rounds.length >= MAX_ROUNDS ? "completed" : "in-progress",
   }
+}
+
+export function endGame(game: Game): Game {
+  return { ...game, status: "completed" }
 }
 
 export function getTotals(game: Game): Record<string, number> {
