@@ -14,7 +14,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { PlayerAvatar } from "@/components/player-avatar"
-import type { Game } from "@/lib/game"
+import { ROUND_NAMES, type Game } from "@/lib/game"
 
 const QUICK_BONUS = -10
 
@@ -62,7 +62,9 @@ export function ScoreEntrySheet({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="bottom">
         <SheetHeader>
-          <SheetTitle>Ronda {roundNumber}</SheetTitle>
+          <SheetTitle>
+            Ronda {roundNumber}: {ROUND_NAMES[roundNumber - 1]}
+          </SheetTitle>
           <SheetDescription>
             Ingresá los puntos de cada jugador para esta ronda.
           </SheetDescription>

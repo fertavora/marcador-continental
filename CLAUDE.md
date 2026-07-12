@@ -36,6 +36,17 @@ Marcador Continental is a scoreboard for the Spanish card game "Continental":
 
 - Mobile-first, responsive, **UI text in Spanish**.
 - Game state persists in browser cookies; the app must show a cookie-consent modal and cannot function if cookies are declined.
-- A game has 8 rounds and 2–6 players; each player gets a name and a randomly assigned color at creation, and the game records its creation date/time.
+- A game has 7 rounds (each with a fixed combination name, e.g. "Dos tríos", "Tres escaleras" — see REQS.md) and 2–6 players; each player gets a name and a randomly assigned color at creation, and the game records its creation date/time.
 - During a game, the user enters each player's points per round, including negative scores (e.g. -10).
 - The app must show a history of past games.
+
+## Change log
+
+After making any code change in this repo, append a dated entry below summarizing what changed and why. Keep entries terse (1–2 lines each); newest date on top, newest entry within a date at the bottom.
+
+### 2026-07-12
+- Fixed `--font-sans: var(--font-sans)` circular reference in `globals.css` (should reference `--font-geist-sans`), which made the browser fall back to Times instead of Geist.
+- `ScoreboardTable` now sorts columns by ascending total score after each round save (lowest total = leading, per Continental's scoring rules).
+- `ScoreboardTable` switched to `table-fixed` with a fixed-width sticky "Ronda" column so player columns split remaining space equally — fixes color-circle avatars sitting flush against the table edge, which `table-auto` caused unevenly (worse with long names or more players). Added `overflow-hidden` + `max-w-full truncate` on header cells since fixed narrow columns no longer auto-clip overflowing name text.
+- Corrected round count: Continental has 7 rounds, not 8 (`MAX_ROUNDS` in `src/lib/game.ts` was wrong). Added `ROUND_NAMES` (the combination per round, per REQS.md) and surfaced it in the round header, the score-entry sheet title, and as a hover tooltip on the scoreboard's "Ronda" cells.
+- Added `endGame()` in `src/lib/game.ts` and a "Terminar juego" button (behind an `AlertDialog` confirm, since it's irreversible) below "Agregar ronda" on the game page, so players can end a game before all 7 rounds are played — winner is whoever has the lowest total at that point.
