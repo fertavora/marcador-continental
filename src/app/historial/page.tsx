@@ -1,10 +1,24 @@
 "use client"
 
 import Link from "next/link"
+import { Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { GameCard } from "@/components/game-card"
 import { useGames } from "@/hooks/use-storage"
+import { deleteAllGames } from "@/lib/storage"
 
 export default function HistorialPage() {
   const games = useGames()
@@ -30,6 +44,37 @@ export default function HistorialPage() {
           <GameCard key={game.id} game={game} />
         ))}
       </div>
+
+      {sorted && sorted.length > 0 && (
+        <AlertDialog>
+          <AlertDialogTrigger render={<Button variant="destructive" size="lg" />}>
+            <Trash2 />
+            Borrar todo el historial
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogMedia className="bg-destructive/10 text-destructive">
+                <Trash2 />
+              </AlertDialogMedia>
+              <AlertDialogTitle className="text-destructive">
+                ¿Borrar todo el historial?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-destructive">
+                {sorted.length === 1
+                  ? "Se eliminará la única partida guardada de forma permanente."
+                  : `Se eliminarán las ${sorted.length} partidas guardadas de forma permanente.`}{" "}
+                Esta acción no se puede deshacer.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction variant="destructive" onClick={() => deleteAllGames()}>
+                Borrar todo
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </main>
   )
 }

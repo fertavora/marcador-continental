@@ -84,3 +84,14 @@ export function saveGame(game: Game): void {
   localStorage.setItem(GAMES_KEY, JSON.stringify(games))
   notify()
 }
+
+export function deleteGame(id: string): void {
+  const games = getGames().filter((game) => game.id !== id)
+  localStorage.setItem(GAMES_KEY, JSON.stringify(games))
+  notify()
+}
+
+export function deleteAllGames(): void {
+  localStorage.removeItem(GAMES_KEY)
+  notify()
+}
