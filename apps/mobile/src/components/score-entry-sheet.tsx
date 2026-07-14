@@ -21,9 +21,11 @@ export function ScoreEntrySheet({
   onSubmit: (scores: Record<string, number>) => void
 }) {
   const [scores, setScores] = useState<Record<string, string>>({})
+  const [showErrors, setShowErrors] = useState(false)
 
   function reset() {
     setScores({})
+    setShowErrors(false)
   }
 
   function setScore(playerId: string, value: string) {
@@ -36,10 +38,14 @@ export function ScoreEntrySheet({
   }
 
   function handleSubmit() {
+    const missing = game.players.some((player) => !scores[player.id]?.trim())
+    if (missing) {
+      setShowErrors(true)
+      return
+    }
     const parsed: Record<string, number> = {}
     for (const player of game.players) {
-      const raw = scores[player.id]
-      parsed[player.id] = raw ? parseInt(raw, 10) || 0 : 0
+      parsed[player.id] = parseInt(scores[player.id], 10) || 0
     }
     onSubmit(parsed)
     close()
@@ -76,12 +82,21 @@ export function ScoreEntrySheet({
                   onChangeText={(value) => setScore(player.id, value)}
                   placeholder="0"
                   placeholderTextColor="#8a8a8a"
-                  className="w-16 rounded-md border border-border px-2 py-2 text-center text-foreground dark:border-border-dark dark:text-foreground-dark"
+                  className={`w-16 rounded-md border px-2 py-2 text-center text-foreground dark:text-foreground-dark ${
+                    showErrors && !scores[player.id]?.trim()
+                      ? "border-destructive dark:border-destructive-dark"
+                      : "border-border dark:border-border-dark"
+                  }`}
                 />
               </View>
             ))}
           </View>
         </ScrollView>
+        {showErrors && (
+          <Text className="mt-3 text-sm text-destructive dark:text-destructive-dark">
+            Ingresá los puntos de todos los jugadores.
+          </Text>
+        )}
         <Button size="lg" className="mt-4" onPress={handleSubmit}>
           Guardar ronda
         </Button>

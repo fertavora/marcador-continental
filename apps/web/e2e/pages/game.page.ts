@@ -12,6 +12,7 @@ export class GamePage {
   readonly historialLink: Locator
   readonly scoreEntrySheet: Locator
   readonly scoreEntrySubmit: Locator
+  readonly scoreEntryError: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -25,6 +26,7 @@ export class GamePage {
     this.historialLink = page.getByTestId("game-historial-link")
     this.scoreEntrySheet = page.getByTestId("score-entry-sheet")
     this.scoreEntrySubmit = page.getByTestId("score-entry-submit")
+    this.scoreEntryError = page.getByTestId("score-entry-error")
   }
 
   async goto(gameId: string) {

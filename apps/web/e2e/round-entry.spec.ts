@@ -52,4 +52,32 @@ test.describe("Ingresar puntajes de una ronda", () => {
     await historialPage.goto()
     await expect(historialPage.statusBadge(game.id)).toHaveText("Finalizada")
   })
+
+  test("no permite guardar una ronda sin ingresar los puntajes de todos los jugadores", async ({
+    seedGames,
+    gamePage,
+  }) => {
+    const game = buildGame(["Ana", "Beto"])
+    await seedGames([game])
+    await gamePage.goto(game.id)
+
+    await gamePage.addRoundButton.click()
+    await gamePage.scoreEntrySubmit.click()
+
+    await expect(gamePage.scoreEntrySheet).toBeVisible()
+    await expect(gamePage.scoreEntryError).toBeVisible()
+    await expect(gamePage.roundRow(1)).toHaveCount(0)
+
+    await gamePage.scoreInput(game.players[0].id).fill("15")
+    await gamePage.scoreEntrySubmit.click()
+
+    await expect(gamePage.scoreEntrySheet).toBeVisible()
+    await expect(gamePage.scoreEntryError).toBeVisible()
+
+    await gamePage.scoreInput(game.players[1].id).fill("-10")
+    await gamePage.scoreEntrySubmit.click()
+
+    await expect(gamePage.scoreEntrySheet).toBeHidden()
+    await expect(gamePage.heading).toHaveText("Ronda 2 de 7: Un trío y una escalera")
+  })
 })

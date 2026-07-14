@@ -32,9 +32,11 @@ export function ScoreEntrySheet({
   onSubmit: (scores: Record<string, number>) => void
 }) {
   const [scores, setScores] = useState<Record<string, string>>({})
+  const [showErrors, setShowErrors] = useState(false)
 
   function reset() {
     setScores({})
+    setShowErrors(false)
   }
 
   function setScore(playerId: string, value: string) {
@@ -48,10 +50,14 @@ export function ScoreEntrySheet({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    const missing = game.players.some((player) => !scores[player.id]?.trim())
+    if (missing) {
+      setShowErrors(true)
+      return
+    }
     const parsed: Record<string, number> = {}
     for (const player of game.players) {
-      const raw = scores[player.id]
-      parsed[player.id] = raw ? parseInt(raw, 10) || 0 : 0
+      parsed[player.id] = parseInt(scores[player.id], 10) || 0
     }
     onSubmit(parsed)
     reset()
@@ -94,9 +100,15 @@ export function ScoreEntrySheet({
                 value={scores[player.id] ?? ""}
                 onChange={(e) => setScore(player.id, e.target.value)}
                 placeholder="0"
+                aria-invalid={showErrors && !scores[player.id]?.trim()}
               />
             </div>
           ))}
+          {showErrors && (
+            <p className="text-sm text-destructive" data-testid="score-entry-error">
+              Ingresá los puntos de todos los jugadores.
+            </p>
+          )}
           <SheetFooter className="p-0">
             <Button type="submit" data-testid="score-entry-submit">
               Guardar ronda
