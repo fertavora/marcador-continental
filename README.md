@@ -32,6 +32,19 @@ npm run lint     # ESLint
 
 These are root-level scripts that proxy into `apps/web` — you can also `cd apps/web` and run the same script names directly.
 
+## Deployment (Vercel)
+
+`apps/web` is deployed on Vercel, linked to this GitHub repo: pushes to `develop`/other branches and PRs get preview deployments, merges to `main` deploy to production.
+
+Because this is an npm workspaces monorepo (not a single-app repo), the project needs non-default Build & Development Settings in the Vercel dashboard:
+
+- **Root Directory:** `apps/web` — tells Vercel where the Next.js app (and its `.next` output) actually lives, instead of the repo root.
+- **Include source files outside of the Root Directory in the Build Step:** enabled — without this, Vercel only copies `apps/web` into the build sandbox and can't see `packages/core` or the root `package.json`/lockfile at all.
+- **Install Command (override):** `cd ../.. && npm install`
+- **Build Command (override):** `cd ../.. && npm run build --workspace=@marcador/web`
+
+Root Directory + "include files outside the root" alone isn't enough: it makes the rest of the monorepo *visible* to the build, but Install/Build Commands still run with `apps/web` as their working directory by default. Since `apps/web/package.json` has no `workspaces` field of its own (only the root `package.json` does) and depends on `@marcador/core` via the workspace-only version `"*"`, a plain `npm install` run from `apps/web` doesn't know it's part of a workspace and tries (and fails) to fetch `@marcador/core` from the public npm registry instead of resolving it from `packages/core`. The `cd ../.. &&` in both overrides steps back up to the true repo root first, so npm resolves workspaces correctly — `next build` still runs with `apps/web` as its own cwd via the `--workspace` flag, so **Output Directory** stays the default (`.next`, relative to Root Directory).
+
 ## Mobile (Android)
 
 1. **Start an emulator.** Open Android Studio's Device Manager and launch an AVD, or from the CLI:
