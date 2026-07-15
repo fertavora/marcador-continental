@@ -15,9 +15,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const APP_NAME = "Marcador Continental";
+const APP_DESCRIPTION = "Marcador para el juego de cartas Continental";
+
 export const metadata: Metadata = {
-  title: "Marcador Continental",
-  description: "Marcador para el juego de cartas Continental",
+  metadataBase: new URL("https://marcador-continental.vercel.app"),
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
+  openGraph: {
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    url: "/",
+    siteName: APP_NAME,
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
